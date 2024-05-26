@@ -28,7 +28,7 @@ const App: React.FC = () => {
   }
 
   if (error) {
-    return <p>Error: {error.message}</p>
+    return <p>Error:</p>
   }
 
   if (!data) {
