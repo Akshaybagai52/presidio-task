@@ -42,7 +42,7 @@ interface PropertyCardProps {
   nearby: string[]
   likes: number
   isLiked: boolean
-  onLikeToggle?: (id: string) => void
+  onLikeToggle: (id: string) => void
   isSeller: boolean
   sellerDetails?: any
 }

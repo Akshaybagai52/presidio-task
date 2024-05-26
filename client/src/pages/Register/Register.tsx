@@ -12,7 +12,7 @@ import {
   VStack,
   Heading,
 } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const RegisterSchema = Yup.object().shape({
   firstName: Yup.string().required('First name is required'),
@@ -22,10 +22,11 @@ const RegisterSchema = Yup.object().shape({
   phoneNumber: Yup.string()
     .matches(/^[0-9]+$/, 'Phone number is not valid')
     .required('Phone number is required'),
-  password: Yup.string().min(6, 'Password too short').required('Password is required'),
+  password: Yup.string().min(4, 'Password too short').required('Password is required'),
 });
 
 const Register: React.FC = () => {
+  const navigateTo = useNavigate()
   return (
     <Box maxW="md" mx="auto" mt={10} p={5} borderWidth={1} borderRadius="lg" boxShadow="lg">
       <Heading as="h1" mb={6} textAlign="center">
@@ -41,10 +42,21 @@ const Register: React.FC = () => {
           password: '',
         }}
         validationSchema={RegisterSchema}
-        onSubmit={(values, { setSubmitting }) => {
-          // Handle form submission
-          console.log(values);
-          setSubmitting(false);
+        onSubmit={async (values, { setSubmitting, resetForm }) => {
+          try {
+            const response = await fetch('http://localhost:5000/api/auth/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjUzMDdjYzBkNDE5ZTEzNmNkZWU1NDkiLCJyb2xlIjoic2VsbGVyIiwiaWF0IjoxNzE2NzE3NTE2fQ.HvUPQFgwbUHglgTdbFvBRmBB3qVzKS8_Fk9fDiIU6q0' },
+              body: JSON.stringify(values)
+            });
+             await response.json();
+            setSubmitting(false);
+            resetForm()
+            navigateTo('/login')
+          } catch (error) {
+            console.error(error);
+            setSubmitting(false);
+          }
         }}
       >
         {({ errors, touched, isSubmitting }) => (

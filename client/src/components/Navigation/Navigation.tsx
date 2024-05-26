@@ -1,10 +1,9 @@
 import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Box, Button, Flex, Spacer } from '@chakra-ui/react'
 import { useAuth } from '../../context/AuthContext'
 
 const Navigation: React.FC = () => {
-  const navigateTo = useNavigate()
   const storedUser = localStorage.getItem('user')
   const user = storedUser ? JSON.parse(storedUser) : null
   const {logout} = useAuth()

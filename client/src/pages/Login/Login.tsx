@@ -11,7 +11,7 @@ import {
   VStack,
   Heading
 } from '@chakra-ui/react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
 const LoginSchema = Yup.object().shape({
@@ -22,7 +22,8 @@ const LoginSchema = Yup.object().shape({
 })
 
 const Login: React.FC = () => {
-    const { login } = useAuth();
+  const { login } = useAuth()
+  const navigateTo = useNavigate()
   return (
     <Box
       maxW='md'
@@ -42,21 +43,30 @@ const Login: React.FC = () => {
           password: ''
         }}
         validationSchema={LoginSchema}
-        onSubmit={async (values, { setSubmitting }) => {
-            try {
-              const response = await fetch('http://localhost:5000/api/auth/login', {
+        onSubmit={async (values, { setSubmitting, resetForm }) => {
+          try {
+            const response = await fetch(
+              'http://localhost:5000/api/auth/login',
+              {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjUzMDdjYzBkNDE5ZTEzNmNkZWU1NDkiLCJyb2xlIjoic2VsbGVyIiwiaWF0IjoxNzE2NzE3NTE2fQ.HvUPQFgwbUHglgTdbFvBRmBB3qVzKS8_Fk9fDiIU6q0' },
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization:
+                    'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjUzMDdjYzBkNDE5ZTEzNmNkZWU1NDkiLCJyb2xlIjoic2VsbGVyIiwiaWF0IjoxNzE2NzE3NTE2fQ.HvUPQFgwbUHglgTdbFvBRmBB3qVzKS8_Fk9fDiIU6q0'
+                },
                 body: JSON.stringify(values)
-              });
-              const data = await response.json();
-              login(data);
-              setSubmitting(false);
-            } catch (error) {
-              console.error(error);
-              setSubmitting(false);
-            }
-          }}
+              }
+            )
+            const data = await response.json()
+            login(data)
+            setSubmitting(false)
+            resetForm()
+            navigateTo('/')
+          } catch (error) {
+            console.error(error)
+            setSubmitting(false)
+          }
+        }}
       >
         {({ errors, touched, isSubmitting }) => (
           <Form>
@@ -77,7 +87,7 @@ const Login: React.FC = () => {
                 />
                 <FormErrorMessage>{errors.password}</FormErrorMessage>
               </FormControl>
-              <Box alignContent='start' width="100%" color="blue">
+              <Box alignContent='start' width='100%' color='blue'>
                 <Link to='/register'>Signup</Link>
               </Box>
 

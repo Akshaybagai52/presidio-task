@@ -47,7 +47,7 @@ const AddProperty: React.FC = () => {
       validationSchema={PropertySchema}
       onSubmit={async (values, { setSubmitting, resetForm }) => {
         try {
-          const response = await fetch('http://localhost:5000/api/properties', {
+          await fetch('http://localhost:5000/api/properties', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

@@ -13,7 +13,7 @@ const BuyerProperties = () => {
   }
 
   if (error) {
-    return <p>Error: {error.message}</p>;
+    return <p>Error: </p>;
   }
 
   if (!data) {
@@ -37,7 +37,7 @@ const BuyerProperties = () => {
           likes={property.likes}
           isLiked={property.isLiked}
           isSeller={true}
-          // onLikeToggle={handleLikeToggle}
+          onLikeToggle={() => console.log('first')}
         />
       ))}
     </SimpleGrid>
