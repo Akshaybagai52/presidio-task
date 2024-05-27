@@ -17,7 +17,7 @@ const auth = async (req, res, next) => {
   } catch (error) {
     res.status(401).send({ error: 'Please authenticate.' });
   }
-};
+}; 
 
 const role = (roles) => (req, res, next) => {
   if (!roles.includes(req.user.role)) {
