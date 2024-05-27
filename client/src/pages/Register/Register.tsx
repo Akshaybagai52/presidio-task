@@ -13,6 +13,7 @@ import {
   Heading,
 } from '@chakra-ui/react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const RegisterSchema = Yup.object().shape({
   firstName: Yup.string().required('First name is required'),
@@ -27,6 +28,7 @@ const RegisterSchema = Yup.object().shape({
 
 const Register: React.FC = () => {
   const navigateTo = useNavigate()
+  const {login} = useAuth();
   return (
     <Box maxW="md" mx="auto" mt={10} p={5} borderWidth={1} borderRadius="lg" boxShadow="lg">
       <Heading as="h1" mb={6} textAlign="center">
@@ -43,13 +45,22 @@ const Register: React.FC = () => {
         }}
         validationSchema={RegisterSchema}
         onSubmit={async (values, { setSubmitting, resetForm }) => {
+          
           try {
+            const bodyData = {
+              name: values.firstName,
+              email: values.email,
+              password: values.password,
+              role: values.role
+            }
             const response = await fetch('http://localhost:5000/api/auth/register', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjUzMDdjYzBkNDE5ZTEzNmNkZWU1NDkiLCJyb2xlIjoic2VsbGVyIiwiaWF0IjoxNzE2NzE3NTE2fQ.HvUPQFgwbUHglgTdbFvBRmBB3qVzKS8_Fk9fDiIU6q0' },
-              body: JSON.stringify(values)
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(bodyData)
             });
-             await response.json();
+             const data = await response.json();
+             console.log(data)
+            //  login(data)
             setSubmitting(false);
             resetForm()
             navigateTo('/login')
