@@ -6,7 +6,8 @@ import Pagination from '../../components/Pagination/Pagination'
 import useGetData from '../../hooks/useGetData'
 
 const App: React.FC = () => {
-  const url = 'http://localhost:5000/api/properties'
+  const url = `${import.meta.env.VITE_BACKEND_URI}/api/properties`
+  console.log('url', url)
   const storedUser = localStorage.getItem('user')
   const user = storedUser ? JSON.parse(storedUser) : null
   const token = user ? user.token : null

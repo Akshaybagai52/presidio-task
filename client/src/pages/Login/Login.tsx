@@ -9,8 +9,9 @@ import {
   FormLabel,
   Input,
   VStack,
-  Heading
+  Heading,
 } from '@chakra-ui/react'
+import { useToast } from '@chakra-ui/react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
@@ -23,6 +24,7 @@ const LoginSchema = Yup.object().shape({
 
 const Login: React.FC = () => {
   const { login } = useAuth()
+  const toast = useToast()
   const navigateTo = useNavigate()
   return (
     <Box
@@ -46,25 +48,49 @@ const Login: React.FC = () => {
         onSubmit={async (values, { setSubmitting, resetForm }) => {
           try {
             const response = await fetch(
-              'http://localhost:5000/api/auth/login',
+              `${import.meta.env.VITE_BACKEND_URI}/api/auth/login`,
               {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
-                  Authorization:
-                    'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjUzMDdjYzBkNDE5ZTEzNmNkZWU1NDkiLCJyb2xlIjoic2VsbGVyIiwiaWF0IjoxNzE2NzE3NTE2fQ.HvUPQFgwbUHglgTdbFvBRmBB3qVzKS8_Fk9fDiIU6q0'
                 },
                 body: JSON.stringify(values)
               }
             )
             const data = await response.json()
-            login(data)
-            setSubmitting(false)
-            resetForm()
-            navigateTo('/')
+            console.log(response, 'response')
+            if (response.ok) {
+              login(data) // Assuming login is a function that handles login logic
+              setSubmitting(false)
+              resetForm()
+              toast({
+                title: 'Success',
+                description: 'User is authenticated',
+                status: 'success',
+                duration: 5000,
+                isClosable: true
+              })
+              navigateTo('/') // Assuming navigate is a function from react-router
+            } else {
+              setSubmitting(false)
+              toast({
+                title: 'Error',
+                description: 'Credentials are incorrect.',
+                status: 'error',
+                duration: 5000,
+                isClosable: true
+              })
+            }
           } catch (error) {
             console.error(error)
             setSubmitting(false)
+            toast({
+              title: 'Error',
+              description: 'Something went wrong. Please try again later.',
+              status: 'error',
+              duration: 5000,
+              isClosable: true
+            })
           }
         }}
       >

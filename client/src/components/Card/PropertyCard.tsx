@@ -63,12 +63,13 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   isSeller,
   sellerDetails
 }) => {
-  const storedUser = localStorage.getItem('user')
-  const user = storedUser ? JSON.parse(storedUser) : null
+
   const navigateTo = useNavigate();
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const showSellerDetails = () => {
+    const storedUser = localStorage.getItem('user')
+    const user = storedUser ? JSON.parse(storedUser) : null
     if (!user) {
         navigateTo('/login')
     } else {

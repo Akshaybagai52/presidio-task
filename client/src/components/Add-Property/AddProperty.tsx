@@ -6,7 +6,8 @@ import {
   FormLabel,
   Input,
   FormErrorMessage,
-  Textarea
+  Textarea,
+  useToast
 } from '@chakra-ui/react'
 import * as Yup from 'yup'
 
@@ -28,7 +29,7 @@ const AddProperty: React.FC = () => {
   const storedUser = localStorage.getItem('user')
   const user = storedUser ? JSON.parse(storedUser) : null
   const token = user.token
-  console.log(token)
+  const toast = useToast()
   return (
     <Formik
       initialValues={{
@@ -47,22 +48,40 @@ const AddProperty: React.FC = () => {
       validationSchema={PropertySchema}
       onSubmit={async (values, { setSubmitting, resetForm }) => {
         try {
-          await fetch('http://localhost:5000/api/properties', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify(values)
-          })
-          //   const data = await response.json()
-          setSubmitting(false)
-          resetForm()
-
-          // Handle successful property addition (e.g., redirect to property list)
+          const response = await fetch(
+            `${import.meta.env.VITE_BACKEND_URI}/api/properties`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+              },
+              body: JSON.stringify(values)
+            }
+          )
+          const data = await response.json()
+          console.log('data: ', data)
+          if (response.ok) {
+            setSubmitting(false)
+            resetForm()
+            toast({
+              title: 'Success',
+              description: 'Property is added successfully',
+              status: 'success',
+              duration: 5000,
+              isClosable: true
+            })
+          }
         } catch (error) {
           console.error(error)
           setSubmitting(false)
+          toast({
+            title: 'Error',
+            description: 'Something went wrong. Please try again later.',
+            status: 'error',
+            duration: 5000,
+            isClosable: true
+          })
         }
       }}
     >

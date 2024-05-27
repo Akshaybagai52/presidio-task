@@ -1,6 +1,6 @@
-import React from 'react';
-import { Formik, Field, Form } from 'formik';
-import * as Yup from 'yup';
+import React from 'react'
+import { Formik, Field, Form } from 'formik'
+import * as Yup from 'yup'
 import {
   Box,
   Button,
@@ -11,9 +11,9 @@ import {
   Select,
   VStack,
   Heading,
-} from '@chakra-ui/react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+  useToast
+} from '@chakra-ui/react'
+import { Link, useNavigate } from 'react-router-dom'
 
 const RegisterSchema = Yup.object().shape({
   firstName: Yup.string().required('First name is required'),
@@ -23,15 +23,27 @@ const RegisterSchema = Yup.object().shape({
   phoneNumber: Yup.string()
     .matches(/^[0-9]+$/, 'Phone number is not valid')
     .required('Phone number is required'),
-  password: Yup.string().min(4, 'Password too short').required('Password is required'),
-});
+  password: Yup.string()
+    .min(4, 'Password too short')
+    .required('Password is required')
+})
 
 const Register: React.FC = () => {
   const navigateTo = useNavigate()
-  const {login} = useAuth();
+  const toast = useToast()
+
+  // const {login} = useAuth();
   return (
-    <Box maxW="md" mx="auto" mt={10} p={5} borderWidth={1} borderRadius="lg" boxShadow="lg">
-      <Heading as="h1" mb={6} textAlign="center">
+    <Box
+      maxW='md'
+      mx='auto'
+      mt={10}
+      p={5}
+      borderWidth={1}
+      borderRadius='lg'
+      boxShadow='lg'
+    >
+      <Heading as='h1' mb={6} textAlign='center'>
         Register
       </Heading>
       <Formik
@@ -41,11 +53,10 @@ const Register: React.FC = () => {
           role: '',
           email: '',
           phoneNumber: '',
-          password: '',
+          password: ''
         }}
         validationSchema={RegisterSchema}
         onSubmit={async (values, { setSubmitting, resetForm }) => {
-          
           try {
             const bodyData = {
               name: values.firstName,
@@ -53,20 +64,37 @@ const Register: React.FC = () => {
               password: values.password,
               role: values.role
             }
-            const response = await fetch('http://localhost:5000/api/auth/register', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(bodyData)
-            });
-             const data = await response.json();
-             console.log(data)
-            //  login(data)
-            setSubmitting(false);
-            resetForm()
-            navigateTo('/login')
+            const response = await fetch(
+              `${import.meta.env.VITE_BACKEND_URI}/api/auth/register`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bodyData)
+              }
+            )
+            await response.json()
+            if (response.ok) {
+              setSubmitting(false)
+              resetForm()
+              toast({
+                title: 'Success',
+                description: 'User is registered Successfully',
+                status: 'success',
+                duration: 5000,
+                isClosable: true
+              })
+              navigateTo('/login')
+            }
           } catch (error) {
-            console.error(error);
-            setSubmitting(false);
+            console.error(error)
+            setSubmitting(false)
+            toast({
+              title: 'Error',
+              description: 'Something went wrong. Please try again later.',
+              status: 'error',
+              duration: 5000,
+              isClosable: true
+            })
           }
         }}
       >
@@ -74,49 +102,68 @@ const Register: React.FC = () => {
           <Form>
             <VStack spacing={4}>
               <FormControl isInvalid={!!errors.firstName && touched.firstName}>
-                <FormLabel htmlFor="firstName">First Name</FormLabel>
-                <Field as={Input} id="firstName" name="firstName" />
+                <FormLabel htmlFor='firstName'>First Name</FormLabel>
+                <Field as={Input} id='firstName' name='firstName' />
                 <FormErrorMessage>{errors.firstName}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.lastName && touched.lastName}>
-                <FormLabel htmlFor="lastName">Last Name</FormLabel>
-                <Field as={Input} id="lastName" name="lastName" />
+                <FormLabel htmlFor='lastName'>Last Name</FormLabel>
+                <Field as={Input} id='lastName' name='lastName' />
                 <FormErrorMessage>{errors.lastName}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.role && touched.role}>
-                <FormLabel htmlFor="role">Role</FormLabel>
-                <Field as={Select} id="role" name="role" placeholder="Select role">
-                  <option value="buyer">Buyer</option>
-                  <option value="seller">Seller</option>
+                <FormLabel htmlFor='role'>Role</FormLabel>
+                <Field
+                  as={Select}
+                  id='role'
+                  name='role'
+                  placeholder='Select role'
+                >
+                  <option value='buyer'>Buyer</option>
+                  <option value='seller'>Seller</option>
                 </Field>
                 <FormErrorMessage>{errors.role}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.email && touched.email}>
-                <FormLabel htmlFor="email">Email</FormLabel>
-                <Field as={Input} id="email" name="email" type="email" />
+                <FormLabel htmlFor='email'>Email</FormLabel>
+                <Field as={Input} id='email' name='email' type='email' />
                 <FormErrorMessage>{errors.email}</FormErrorMessage>
               </FormControl>
 
-              <FormControl isInvalid={!!errors.phoneNumber && touched.phoneNumber}>
-                <FormLabel htmlFor="phoneNumber">Phone Number</FormLabel>
-                <Field as={Input} id="phoneNumber" name="phoneNumber" />
+              <FormControl
+                isInvalid={!!errors.phoneNumber && touched.phoneNumber}
+              >
+                <FormLabel htmlFor='phoneNumber'>Phone Number</FormLabel>
+                <Field as={Input} id='phoneNumber' name='phoneNumber' />
                 <FormErrorMessage>{errors.phoneNumber}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.password && touched.password}>
-                <FormLabel htmlFor="password">Password</FormLabel>
-                <Field as={Input} id="password" name="password" type="password" />
+                <FormLabel htmlFor='password'>Password</FormLabel>
+                <Field
+                  as={Input}
+                  id='password'
+                  name='password'
+                  type='password'
+                />
                 <FormErrorMessage>{errors.password}</FormErrorMessage>
               </FormControl>
 
-              <Box alignContent='start' width="100%" color="blue">
+              <Box alignContent='start' width='100%' color='blue'>
                 <Link to='/login'>Login</Link>
               </Box>
 
-              <Button mt={6} type="submit" width='100%' variant='outline'  colorScheme="teal" isLoading={isSubmitting}>
+              <Button
+                mt={6}
+                type='submit'
+                width='100%'
+                variant='outline'
+                colorScheme='teal'
+                isLoading={isSubmitting}
+              >
                 Register
               </Button>
             </VStack>
@@ -124,7 +171,7 @@ const Register: React.FC = () => {
         )}
       </Formik>
     </Box>
-  );
-};
+  )
+}
 
-export default Register;
+export default Register

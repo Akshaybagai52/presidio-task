@@ -23,7 +23,7 @@ const Navigation: React.FC = () => {
         <Spacer />
         {user ? (
           <>
-            {user.role === 'seller' && (
+            {user?.user?.role === 'seller' && (
               <Link to="/seller-dashboard">
                 <Button variant="link" mr={4}>
                   Seller Dashboard
